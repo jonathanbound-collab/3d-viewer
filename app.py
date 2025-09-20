@@ -74,7 +74,9 @@ with col2:
                 # Prepare custom axis ticks
                 even_bays = sorted([b for b in df['Bay'].unique() if b % 2 == 0])
                 bay_tickvals = [(b - 2) / 2 for b in even_bays]
-                bay_ticktext = [f"{b:02d}" for b in even_bays]
+                # --- MODIFIED LINE ---
+                bay_ticktext = [f"{int(b):02d}" for b in even_bays] # Convert to int before formatting
+
                 unique_tiers = sorted(df['Tier'].unique())
                 tier_tickvals = [t - 1 for t in unique_tiers]
                 tier_ticktext = [str(t) for t in unique_tiers]
