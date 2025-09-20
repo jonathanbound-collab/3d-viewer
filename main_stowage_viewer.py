@@ -4,7 +4,6 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.offline as pyo
 import sys
-from IPython.display import display, HTML
 
 # ---------- constants ----------
 REQUIRED_COLUMNS = ["Bay", "Row", "Tier", "Container_ID", "Container_Location", "Declared_Cargo", "Colour"]
@@ -124,27 +123,22 @@ def main(csv_path, output_path):
             continue
 
     # --- NEW: Prepare Custom Axis Ticks ---
-    # Bay (X-axis): Label the 40ft bay slots
     even_bays = sorted([b for b in df['Bay'].unique() if b % 2 == 0])
     bay_tickvals = [(b - 2) / 2 for b in even_bays]
-    bay_ticktext = [f"{b:02d}" for b in even_bays] # Format as 02, 06, etc.
+    bay_ticktext = [f"{b:02d}" for b in even_bays]
 
-    # Tier (Z-axis)
     unique_tiers = sorted(df['Tier'].unique())
     tier_tickvals = [t - 1 for t in unique_tiers]
     tier_ticktext = [str(t) for t in unique_tiers]
 
-    # Row (Y-axis)
     unique_rows = sorted(df['Row'].unique())
     row_tickvals = [row_to_y(r) for r in unique_rows]
     row_ticktext = [str(r) for r in unique_rows]
 
-    # --- UPDATED: Configure and Save Plot ---
     fig.update_layout(
         title='Vessel Stowage Plan',
-        showlegend=False, # <-- Hide the legend
+        showlegend=False,
         scene=dict(
-            # Define axes with custom ticks
             xaxis=dict(title="Bay", tickvals=bay_tickvals, ticktext=bay_ticktext),
             yaxis=dict(title="Row", tickvals=row_tickvals, ticktext=row_ticktext),
             zaxis=dict(title="Tier", tickvals=tier_tickvals, ticktext=tier_ticktext),
@@ -153,21 +147,6 @@ def main(csv_path, output_path):
         ),
         margin=dict(l=0, r=0, b=0, t=40)
     )
-
-    pyo.plot(fig, filename=output_path, auto_open=False)
-    print(f"✨ Successfully created stowage view at '{output_path}'")
-
-
-if __name__ == "__main__":
-    # --- For Notebook Users: Define your files here ---
-    input_csv = "containers.csv"
-    output_html = "stowage_view.html"
     
-    print(f"Running analysis for '{input_csv}'...")
-    main(input_csv, output_html)
-
-    print("Displaying stowage plan...")
-    with open(output_html, 'r', encoding='utf-8') as f:
-        html_content = f.read()
-    
-    display(HTML(html_content))
+    # This function will now return the figure to the main app
+    return fig
